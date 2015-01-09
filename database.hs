@@ -11,12 +11,13 @@ import Database.Persist.Sqlite
 import Data.Text hiding (count)
 import Web.Spock.Simple hiding (delete)
 
+import Control.Monad.Trans.Resource (runResourceT)
 import Control.Monad.IO.Class (liftIO)
 import Control.Monad.Logger (runNoLoggingT)
 
 {- --- -}
 
-gConnFake = PCConn (ConnBuilder (return ()) (const (return ())) (PoolCfg 1 1 1))
+fakePCConn = PCConn (ConnBuilder (return ()) (const (return ())) (PoolCfg 1 1 1))
 
 initDB     nm = runSqlite nm $ runMigration migrateAll
 createPool nm = runNoLoggingT $ createSqlitePool nm 10
@@ -27,9 +28,15 @@ makeDB db = initDB db >>
 		lockDB p >>
 		return p
 
+{-
 runIOPool action = do
 	(pool,_,_) <- getState
 	liftIO $ runSqlPool action pool
+-}
+
+runIOPool action = 
+	runQuery $ \conn ->
+        runResourceT $ runNoLoggingT $ runSqlConn action conn
 
 sList exp         = runIOPool $ selectList [exp] []
 uDB key wKey nVal = runIOPool $ update key [wKey =. nVal]
