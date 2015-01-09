@@ -22,7 +22,7 @@ import Web.Spock.Simple
 main =
 	C.get >>= \conf ->
 		DB.makeDB (C.dbName conf) >>= \pool ->
-			runSpock (C.port conf) $ spock dCfg (PCPool pool) (pool,"auth_user","auth_pass") run
+			runSpock (C.port conf) $ spock dCfg (PCPool pool) (conf) run
 	where
 		dCfg = SessionCfg "def" (0) 42 id Nothing
 
@@ -49,7 +49,8 @@ anyPage = do
 	hookAny GET  mainPage
 	hookAny POST mainPage
 	where
-		mainPage eText = text "Server is Running"
+		mainPage eText = getState >>= \conf ->
+			text $ append (C.serverName conf) " is Running"
 
 newPlayer = do
 	(Just name :: Maybe Text) <- param k_playerName

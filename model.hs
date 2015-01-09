@@ -20,6 +20,8 @@ import Control.Monad
 import Control.Applicative
 import Database.Persist.TH
 
+import qualified Config as C
+
 share [mkPersist sqlSettings, mkMigrate "migrateAll"] [persistLowerCase|
 Person
   dId Int
@@ -64,8 +66,8 @@ h1T t = wrapT"<h1>" "</h1>" t
 
 wrapT b e t = append (append b t) e
 
-canLogin user pass = do
-  (_,u,p) <- SP.getState
-  return (u == user && p == pass)
+canLogin user pass =
+  SP.getState >>= \conf ->
+    return (C.user conf == user && C.pass conf == pass)
 
 auth action = SP.requireBasicAuth "AUTH" canLogin $ action

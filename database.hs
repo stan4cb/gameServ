@@ -17,8 +17,6 @@ import Control.Monad.Logger (runNoLoggingT)
 
 {- --- -}
 
-fakePCConn = PCConn (ConnBuilder (return ()) (const (return ())) (PoolCfg 1 1 1))
-
 initDB     nm = runSqlite nm $ runMigration migrateAll
 createPool nm = runNoLoggingT $ createSqlitePool nm 10
 lockDB p   = runSqlPool (selectFirst [PersonId ==. (toKeyP (0 :: Int))] []) p
