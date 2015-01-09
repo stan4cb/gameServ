@@ -52,14 +52,14 @@ instance ToJSON Person where
 
 k_score      = "nScore" :: Text
 k_CScore     = "cScore" :: Text
-k_playerID   = "pID" :: Text
-k_playerName = "name" :: Text
+k_playerID   = "pID"    :: Text
+k_playerName = "name"   :: Text
 
 {- Tools -}
 
 jSucces = SP.json $ ["succes" :: Text]
 
-newPID name = Person (-1) name 0 0
+newPerson name = Person (-1) name 0 0
 
 centerT t = wrapT "<center>" "</center>" t
 h1T t = wrapT"<h1>" "</h1>" t

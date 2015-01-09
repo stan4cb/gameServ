@@ -38,10 +38,10 @@ run = do
 		post     "/player"  $ auth Get.player
 		post     "/rplayer" $ auth Get.rPlayer
 
-	subcomponent "/update"     $ do
-		post     "/name"       $ auth Update.name
-		post     "/score"      $ auth Update.score
-		post     "/cscore"     $ auth Update.cScore
+	subcomponent "/update"  $ do
+		post     "/name"    $ auth Update.name
+		post     "/score"   $ auth Update.score
+		post     "/cscore"  $ auth Update.cScore
 
 {- PAGES-}
 
@@ -50,11 +50,11 @@ anyPage = do
 	hookAny POST mainPage
 	where
 		mainPage eText = getState >>= \conf ->
-			text $ append (C.serverName conf) " is Running"
+			html $ append (C.servName conf) (C.servInfo conf)
 
 newPlayer = do
 	(Just name :: Maybe Text) <- param k_playerName
 
-	rawID <- DB.insertPerson (newPID name)
+	rawID <- DB.insertPerson (newPerson name)
 	DB.suId rawID
 	json $ DB.keyOutLB rawID
